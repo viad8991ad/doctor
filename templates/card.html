@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Карта осмотра</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+</head>
+<body>
+<nav>
+    <div class="nav-wrapper">
+        <a href="/">Карта осмотра</a>
+    </div>
+</nav>
+
+<form method="POST">
+    <fieldset>
+        <legend>Пациент</legend>
+        <div class="input-field col s6">
+            <div>ФИО</div>
+            <select id="first_name" name="patient" onchange="location = this.value;" class="browser-default">
+                {% for id, fio, date, _, _, _ in patients %}
+                    <option value="{{ url_for('card', patient_id=id) }}"
+                            {% if current[0] == id %} selected {% endif %}>{{ fio }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="input-field col s6">
+            <input disabled value="{{ current[2] }}" id="birthday" type="text" class="validate">
+            <label for="birthday">Дата рождения</label>
+        </div>
+    </fieldset>
+
+    <fieldset>
+        <legend>Результаты приема</legend>
+
+        <textarea id="textarea1" class="materialize-textarea" name="complaint">{{ current[4] }}</textarea>
+        <label for="textarea1">Жалобы пациента</label>
+
+        <textarea id="textarea2" class="materialize-textarea" name="diagnosis">{{ current[3] }}</textarea>
+        <label for="textarea2">Диагноз</label>
+
+        <textarea id="textarea3" class="materialize-textarea" name="treatment">{{ current[5] }}</textarea>
+        <label for="textarea3">Лечение</label>
+
+
+        <div class="row">
+            <input class="waves-effect btn" type="submit">
+        </div>
+    </fieldset>
+</form>
+</body>
+</html>

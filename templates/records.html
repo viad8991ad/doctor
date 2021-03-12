@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <title>График записей пациентов</title>
+</head>
+<body>
+<nav>
+    <div class="nav-wrapper">
+        <a href="/">График записей пациентов</a>
+    </div>
+</nav>
+<div>
+    <div class="col s12 m7">
+        {% for fio, birthday, snils, polis, address, phone, date in register %}
+
+            <div class="card horizontal">
+                <div class="card-stacked">
+                    <div class="card-content">
+                        <h5>{{ fio }}</h5>
+                        <h6>Дата приема {{ date }}</h6>
+                        <p>День рождения: {{ birthday }}</p>
+                        <p>СНИЛС: {{ snils }}</p>
+                        <p>Полис: {{ polis }}</p>
+                        <p>Адрес проживания: {{ address }}</p>
+                        <p>Телефон: {{ phone }}</p>
+                    </div>
+                </div>
+            </div>
+
+        {% endfor %}
+
+    </div>
+</div>
+</body>
+</html>
