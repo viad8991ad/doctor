@@ -39,16 +39,17 @@
 
         {% with messages = get_flashed_messages() %}
             {% if messages %}
-                {% if error %}
+                {% if messages[0] == "Заполните все поля" %}
                     <div class="materialert error">
-                    <div class="material-icons">error</div>
+                        <div class="material-icons">error</div>
+                        {{ messages[0] }}
+                    </div>
                 {% else %}
-                    <div class="materialert warning">
-                    <div class="material-icons">warning</div>
+                    <div class="materialert info">
+                        <div class="material-icons">info_outline</div>
+                        {{ messages[0] }}
+                    </div>
                 {% endif %}
-
-            {{ messages[0] }}
-            </div>
             {% endif %}
         {% endwith %}
 
@@ -103,6 +104,11 @@
 
     .materialert .material-icons {
         margin-right: 10px;
+    }
+
+    .materialert.info {
+        background-color: #039be5;
+        color: #fff;
     }
 
     .materialert.warning {

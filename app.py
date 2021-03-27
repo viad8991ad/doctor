@@ -50,7 +50,7 @@ def card(patient_id):
             treatment = request.form['treatment']
             if not diagnosis or not complaint or not treatment:
                 flash("Заполните все поля")
-                return redirect(url_for("card", patient_id=patient_id, error=True))
+                return redirect(url_for("card", patient_id=patient_id))
             else:
                 with connect(db) as con:
                     cur = con.cursor()
@@ -61,7 +61,9 @@ def card(patient_id):
                     else:
                         cur.execute(
                             """UPDATE diagnosis SET diagnosis = ?, complaint = ?, treatment = ? WHERE register_id = ?""",
-                            (request.form['diagnosis'], request.form['complaint'], request.form['treatment'], patient_id)
+                            (
+                                request.form['diagnosis'], request.form['complaint'], request.form['treatment'],
+                                patient_id)
                         )
                     con.commit()
             return redirect(url_for("index"))
