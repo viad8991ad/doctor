@@ -94,11 +94,9 @@ def analyzes(patient_id):
                     "FROM analyzes LEFT JOIN register ON analyzes.register_id = register.id "
                     "WHERE analyzes.register_id = ?", (patient_id,))
         analyzes = cur.fetchall()
-        print(analyzes)
-        print(type(analyzes))
         if len(analyzes) == 0:
             flash('У пациента не обнаружены анализы')
-            return redirect(url_for('card', patient_id=patient_id, error=False))
+            return redirect(url_for('card', patient_id=patient_id))
         else:
             logging.info(f'analyzes for patient - {patient_id}: {str(analyzes)}')
             return render_template('analyzes.html', analyzes=analyzes)
