@@ -1,11 +1,12 @@
 import random
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, flash
 from sqlite3 import connect
 from repository import init
 from datetime import datetime, timedelta
 import logging
 
 app = Flask(__name__)
+app.config['SECRET_KEY'] = 'l2k34l5kj2l4kj'
 db = "resources/history.db"
 logging.basicConfig(filename=f'log{datetime.now()}.log', level=logging.DEBUG)
 init(db)
@@ -47,18 +48,23 @@ def card(patient_id):
             diagnosis = request.form['diagnosis']
             complaint = request.form['complaint']
             treatment = request.form['treatment']
-            with connect(db) as con:
-                cur = con.cursor()
-                cur.execute("SELECT register_id FROM diagnosis WHERE register_id = ?", (patient_id,))
-                if cur.fetchone() is None:
-                    cur.execute("INSERT INTO diagnosis VALUES (?, ?, ?, ?)",
-                                (patient_id, diagnosis, complaint, treatment))
-                else:
-                    cur.execute(
-                        """UPDATE diagnosis SET diagnosis = ?, complaint = ?, treatment = ? WHERE register_id = ?""",
-                        (request.form['diagnosis'], request.form['complaint'], request.form['treatment'], patient_id)
-                    )
-                con.commit()
+            if not diagnosis or not complaint or not treatment:
+                flash("Заполните все поля")
+                return redirect(url_for("card", patient_id=patient_id, error=True))
+            else:
+                with connect(db) as con:
+                    cur = con.cursor()
+                    cur.execute("SELECT register_id FROM diagnosis WHERE register_id = ?", (patient_id,))
+                    if cur.fetchone() is None:
+                        cur.execute("INSERT INTO diagnosis VALUES (?, ?, ?, ?)",
+                                    (patient_id, diagnosis, complaint, treatment))
+                    else:
+                        cur.execute(
+                            """UPDATE diagnosis SET diagnosis = ?, complaint = ?, treatment = ? WHERE register_id = ?""",
+                            (request.form['diagnosis'], request.form['complaint'], request.form['treatment'], patient_id)
+                        )
+                    con.commit()
+            return redirect(url_for("index"))
         elif request.form['submit'] == 'Направление на анализы':
             logging.info(f'patient - {patient_id} get referral for analyzes')
             with connect(db) as con:
@@ -69,6 +75,7 @@ def card(patient_id):
                      datetime.now() + timedelta(days=7))
                 )
                 con.commit()
+                return redirect(url_for("index"))
         elif request.form['submit'] == 'Результаты анализов':
             logging.info(f'show analyzes for patient - {patient_id}')
             return redirect(url_for('analyzes', patient_id=patient_id))
@@ -81,14 +88,20 @@ def card(patient_id):
 def analyzes(patient_id):
     with connect(db) as con:
         cur = con.cursor()
-        cur.execute("SELECT * FROM analyzes WHERE register_id = ?", (patient_id,))
-        result = cur.fetchone()
-        if result is None:
-            analyzes = False
+        cur.execute("SELECT analyzes.register_id, analyzes.name, analyzes.result, analyzes.date, register.fio "
+                    "FROM analyzes LEFT JOIN register ON analyzes.register_id = register.id "
+                    "WHERE analyzes.register_id = ?", (patient_id,))
+        analyzes = cur.fetchall()
+        print(analyzes)
+        print(type(analyzes))
+        if len(analyzes) == 0:
+            flash('У пациента не обнаружены анализы')
+            return redirect(url_for('card', patient_id=patient_id, error=False))
         else:
-            analyzes = result
-        logging.info(f'analyzes for patient - {patient_id}: {str(analyzes)}')
-    return render_template('analyzes.html', analyzes=analyzes)
+            logging.info(f'analyzes for patient - {patient_id}: {str(analyzes)}')
+            return render_template('analyzes.html', analyzes=analyzes)
+    logging.error("internal server exception")
+    return redirect(url_for('index'))
 
 
 def random_name_analyzes():

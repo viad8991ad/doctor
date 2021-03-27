@@ -5,15 +5,40 @@
     <title>Анализы</title>
 </head>
 <body>
-{% if not analyzes %}
-    <p>Пациенту не были назаначены анализы</p>
-    <a href="{{ url_for('card', patient_id=0) }}">Назад</a>
-{% else %}
-    <p>Анализ {{ analyzes[2] }}</p>
-    <p>Результат {{ analyzes[3] }}</p>
-    <p>Дата {{ analyzes[4] }}</p>
-    <a href="{{ url_for('card', patient_id=analyzes[0]) }}">Назад</a>
-{% endif %}
+<table>
+    <caption>Анализы пациента {{ analyzes[0][4] }}</caption>
 
+    <tr>
+        <th>Анализ</th>
+        <th>Результат</th>
+        <th>Дата</th>
+    </tr>
+    {% for item in analyzes %}
+        <tr>
+            <td>{{ item[1] }}</td>
+            <td>{{ item[2] }}</td>
+            <td>{{ item[3] }}</td>
+        </tr>
+    {% endfor %}
+</table>
+<a href="{{ url_for('card', patient_id=analyzes[0]) }}">Назад</a>
 </body>
+<style>
+    caption {
+        caption-side: bottom;
+        text-align: right;
+        padding: 10px 0;
+    }
+
+    table, td, th {
+        border: 1px solid black;
+        text-align: left;
+        padding: 7px;
+    }
+
+    table {
+        border-collapse: collapse;
+        font-size: 125%;
+    }
+</style>
 </html>

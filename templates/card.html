@@ -5,10 +5,11 @@
     <title>Карта осмотра</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
 <body>
 <nav>
-    <div class="nav-wrapper">
+    <div class="nav-wrapper" style="padding-left: 10px; font-size: 200%;">
         <a href="/">Карта осмотра</a>
     </div>
 </nav>
@@ -17,13 +18,15 @@
     <fieldset>
         <legend>Пациент</legend>
         <div class="input-field col s6">
-            <div>ФИО</div>
-            <select id="first_name" name="patient" onchange="location = this.value;" class="browser-default">
-                {% for id, fio, date, _, _, _ in patients %}
-                    <option value="{{ url_for('card', patient_id=id) }}"
-                            {% if current[0] == id %} selected {% endif %}>{{ fio }}</option>
-                {% endfor %}
-            </select>
+            <div class="col s12 m12">
+                <label for="first_name">ФИО</label>
+                <select id="first_name" class="browser-default" name="patient" onchange="location = this.value;">
+                    {% for id, fio, date, _, _, _ in patients %}
+                        <option value="{{ url_for('card', patient_id=id) }}"
+                                {% if current[0] == id %} selected {% endif %}>{{ fio }}</option>
+                    {% endfor %}
+                </select>
+            </div>
         </div>
         <div class="input-field col s6">
             <input disabled value="{{ current[2] }}" id="birthday" type="text" class="validate">
@@ -33,6 +36,21 @@
 
     <fieldset>
         <legend>Результаты приема</legend>
+
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% if error %}
+                    <div class="materialert error">
+                    <div class="material-icons">error</div>
+                {% else %}
+                    <div class="materialert warning">
+                    <div class="material-icons">warning</div>
+                {% endif %}
+
+            {{ messages[0] }}
+            </div>
+            {% endif %}
+        {% endwith %}
 
         <textarea id="textarea1" class="materialize-textarea" name="complaint">{{ current[4] }}</textarea>
         <label for="textarea1">Жалобы пациента</label>
@@ -52,4 +70,49 @@
     </fieldset>
 </form>
 </body>
+<style>
+    .row {
+        margin-top: 40px;
+        float: right;
+    }
+
+    .input-field.col label {
+        left: 0;
+    }
+
+    .materialert {
+        position: relative;
+        min-width: 150px;
+        padding: 15px;
+        margin-bottom: 20px;
+        margin-top: 15px;
+        border: 1px solid transparent;
+        border-radius: 4px;
+        transition: all 0.1s linear;
+        webkit-box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.12), 0 1px 5px 0 rgba(0, 0, 0, 0.2);
+        box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.12), 0 1px 5px 0 rgba(0, 0, 0, 0.2);
+        display: -webkit-box;
+        display: -webkit-flex;
+        display: -ms-flexbox;
+        display: flex;
+        -webkit-box-align: center;
+        -webkit-align-items: center;
+        -ms-flex-align: center;
+        align-items: center;
+    }
+
+    .materialert .material-icons {
+        margin-right: 10px;
+    }
+
+    .materialert.warning {
+        background-color: #fbc02d;
+        color: #fff;
+    }
+
+    .materialert.error {
+        background-color: #c62828;
+        color: #fff;
+    }
+</style>
 </html>
