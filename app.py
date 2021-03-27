@@ -66,7 +66,8 @@ def card(patient_id):
                                 patient_id)
                         )
                     con.commit()
-            return redirect(url_for("index"))
+                flash("Запись сохранена")
+                return redirect(url_for("card", patient_id=patient_id))
         elif request.form['submit'] == 'Направление на анализы':
             logging.info(f'patient - {patient_id} get referral for analyzes')
             with connect(db) as con:
